@@ -1,12 +1,5 @@
 // netlify/functions/analyzeDream.js
-// Bu fonksiyon, OpenAI API'sini kullanarak rüyayı analiz eder.
-// Netlify'da OPENAI_API_KEY adlı environment variable tanımlaman gerekiyor.
-
-const OpenAI = require("openai");
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Bu fonksiyon Netlify Functions üzerinde çalışır ve OpenAI'ye doğrudan HTTP isteği atar.
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -17,6 +10,11 @@ exports.handler = async (event) => {
   }
 
   try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("OPENAI_API_KEY tanımlı değil");
+    }
+
     const body = JSON.parse(event.body || "{}");
     const text = (body.text || "").toString().trim();
 
@@ -50,32 +48,50 @@ Daha sonra rüyadaki önemli öğelerden en fazla 6 tane çıkar ve her birine b
 
 Rüya metni: ${text}`;
 
-    const completion = await client.responses.create({
-      model: "gpt-4.1-mini",
-      input: prompt,
-      response_format: { type: "json_object" },
+    // OpenAI'ye HTTP isteği
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1-mini",
+        input: prompt,
+        response_format: { type: "json_object" },
+      }),
     });
 
-    const out = completion.output?.[0]?.content?.[0];
-    const raw = out?.text || out?.output_text || JSON.stringify(out);
-
-    if (!raw) {
-      throw new Error("AI yanıtı boş geldi.");
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("OpenAI error:", response.status, errText);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "OpenAI isteği başarısız" }),
+      };
     }
 
-    let data;
+    const data = await response.json();
+    const out = data.output?.[0]?.content?.[0];
+    const raw = out?.text || out?.output_text || JSON.stringify(out || data);
+
+    let json;
     try {
-      data = JSON.parse(raw);
+      json = JSON.parse(raw);
     } catch (e) {
-      throw new Error("AI yanıtı geçerli JSON değil.");
+      console.error("JSON parse error:", e, raw);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "AI yanıtı JSON değil" }),
+      };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
+      body: JSON.stringify(json),
     };
   } catch (err) {
-    console.error("AI hata:", err);
+    console.error("Function error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "Sunucu hatası", details: err.message }),
