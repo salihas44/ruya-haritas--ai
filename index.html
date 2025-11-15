@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rüya Haritası AI | Yapay Zekâ Destekli Rüya Analizi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Rüyanı yaz, yapay zekâ rüyanı analiz etsin ve bilinçaltı rüya haritanı görselleştirsin."
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="logo-area">
+          <div class="logo-circle">🌙</div>
+          <div class="logo-text">
+            <h1>Rüya Haritası AI</h1>
+            <p>Rüyanı yaz, bilinçaltını harita gibi gör.</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="saveDreamBtn" class="btn ghost" title="Rüyanı kaydet (Firebase)">
+            💾 Rüyayı Kaydet
+          </button>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <section class="dream-input-panel">
+          <h2>Rüyanı Anlat</h2>
+          <p class="hint">
+            Mümkün olduğunca detaylı yaz. Mekan, kişiler, hisler, renkler, semboller... Ne kadar fazla detay, o kadar iyi analiz.
+          </p>
+
+          <textarea
+            id="dreamText"
+            class="dream-textarea"
+            placeholder="Örneğin: Dün gece deniz kenarında yürüyordum, gökyüzü mor ve turuncuydu. Yanımda tanımadığım biri vardı, sürekli koşmamız gerektiğini söylüyordu..."
+          ></textarea>
+
+          <div class="input-footer">
+            <span id="charCount" class="char-count">0 karakter</span>
+            <button id="analyzeBtn" class="btn primary">
+              🔮 Rüyayı Çözümle
+            </button>
+          </div>
+        </section>
+
+        <section class="analysis-panel">
+          <div class="analysis-grid">
+            <article class="card">
+              <h3>Duygu Analizi</h3>
+              <p id="emotionAnalysis" class="placeholder">
+                Rüyanın genel duygusal tonunu burada göreceksin.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Temalar & Semboller</h3>
+              <p id="themesAnalysis" class="placeholder">
+                Rüyandaki tekrar eden temalar, semboller ve anlamları burada listelenecek.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Bilinçaltı Mesajı</h3>
+              <p id="subconsciousAnalysis" class="placeholder">
+                Yapay zekâ, rüyanın sana ne anlatmak istediğini burada özetleyecek.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Bugünkü Ruh Hali Özeti</h3>
+              <p id="moodSummary" class="placeholder">
+                Rüyanın bugünkü ruh halinle ilişkisi ve kısa yorum burada görünecek.
+              </p>
+            </article>
+          </div>
+
+          <div class="dream-map-section">
+            <div class="map-header">
+              <h2>Rüya Haritası</h2>
+              <p>Rüyandaki önemli öğeler, duygular ve bağlantılar görsel baloncuklar halinde.</p>
+            </div>
+            <div id="dreamMap" class="dream-map">
+              <div class="map-empty">
+                🧠 Rüyayı analiz ettikten sonra burada renkli baloncuklar belirecek.
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <small>
+          Rüya Haritası AI · Yapay zekâ destekli deneysel rüya analiz aracı.<br />
+          Ticari sürüm: premium özellikler, PDF raporlar, uzun dönem ruh hali trendi vb. eklenebilir.
+        </small>
+      </footer>
+    </div>
+
+    <!-- Firebase (config'i app.js içinden dolduracaksın) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Uygulama JS -->
+    <script src="app.js"></script>
+  </body>
+</html>
